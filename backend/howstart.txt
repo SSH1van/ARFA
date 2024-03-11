@@ -1,0 +1,3 @@
+1) Python 3.11.0 (Не забудь поменять переменные среды)
+2) Установить VC_redist.x64.exe
+3) pip install tensorflow
