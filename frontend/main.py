@@ -45,6 +45,24 @@ def on_click():
     form.label.setText("Метрика: " + str(metrik) + "\nНет деструктива")
 form.pushButton.clicked.connect(on_click)
 
+# вывод в файлик по 3 строчечки
+def take_onClick():
+    filename = 'output.txt'
+    with open(filename, 'w') as file:
+        lines = form.textEdit.toPlainText().split('\n')
+        batch = []
+        for line in lines:
+            if line.strip():
+                batch.append(line)
+            if len(batch) == 3:
+                file.write('\n'.join(batch) + '\n\n')
+                batch = []
+
+        if batch:  # если осталась еще одна строка
+            file.write('\n'.join(batch) + '\n')
+form.pushButton.clicked.connect(take_onClick)
+
+
 
 # Функция открытия файла для загрузки в textEdit
 def OpenFile():
