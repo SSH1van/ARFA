@@ -1,8 +1,9 @@
 from PyQt5 import uic, QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, QMenu, QPushButton, QFileDialog, QVBoxLayout
 import time
+import os
 
-Form, Window = uic.loadUiType("project.ui") 
+Form, Window = uic.loadUiType("frontend/project.ui")
 
 app = QApplication([])
 window = Window()
@@ -47,7 +48,7 @@ form.pushButton.clicked.connect(on_click)
 
 # вывод в файлик по 3 строчечки
 def take_onClick():
-    filename = 'output.txt'
+    filename = 'frontend/output.txt'
     with open(filename, 'w') as file:
         lines = form.textEdit.toPlainText().split('\n')
         batch = []
@@ -83,7 +84,7 @@ form.textEdit.textChanged.connect(change)
 # Получение словаря метрик из файла
 def read_metric_dict():
     metric_dict = {}
-    file_name = "./songs/metriks.txt"
+    file_name = "frontend/songs/metriks.txt"
     with open(file_name, 'r', encoding='utf8') as file:
         for line in file:
             key, value = line.strip().split(',')
@@ -95,7 +96,7 @@ def read_metric_dict():
 # Функция выгрузки текста из файла в textEdit при нажатии на элемент listWidget
 def choose_Item():
     name_song = form.listWidget.currentItem().text()
-    file_name = "./songs/" + str(name_song) + ".txt"
+    file_name = "frontend/songs/" + str(name_song) + ".txt"
     with open(file_name, 'r', encoding='utf-8') as file:
         text = file.read()
     form.textEdit.setPlainText(text) 
