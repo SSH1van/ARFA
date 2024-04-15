@@ -17,7 +17,7 @@ all_items = []
 found_items = []
 
 
-# Функционал поиска среди списка песен
+# Функция поиска среди списка песен
 def search():
     s_text = form.lineEdit.text()
     found_items.clear()
@@ -40,7 +40,7 @@ for index in range(form.listWidget.count()):
 form.lineEdit.textChanged.connect(search)
 
 
-# вывод в файлик по 3 строчечки
+# Вывод в файлик по 3 строчечки
 # def take_onClick():
 #     filename = 'frontend/output.txt'
 #     with open(filename, 'w') as file:
@@ -59,39 +59,54 @@ form.lineEdit.textChanged.connect(search)
 
 
 
-
-text1 = ''
-
-def take_onClick():
-    mas_metriks = []
-    global text1
-    lines = form.textEdit.toPlainText().split('\n')
+def stratPredict():
+    text1 = ''
     batch = []
+    mas_metrics = []
+    lines = form.textEdit.toPlainText().split('\n')
+    
+    # Циклом собираем по 3 строки
     for line in lines:
         if line.strip():
             batch.append(line)
         if len(batch) == 3:
             text1 += '\n'.join(batch) + '\n\n'
-            mas_metriks.append(tf.predict(batch))
+            mas_metrics.append(tf.predict(batch))
             batch = []
-        if batch:  # если осталась еще одна строка
+        # Если осталась еще одна строка, то дозаписываем её
+        if batch:  
             text1 += '\n'.join(batch) + '\n'
-            mas_metriks.append(tf.predict(batch))
+            mas_metrics.append(tf.predict(batch))
+    
+    # Расчёт суммы метрик
+    sum_metrics = 0
+    for metriс in mas_metrics:
+        sum_metrics += metriс
 
-    form.label.setText("Метрика: " + str(mas_metriks))
+    # Если пользователь ничего не ввёл, то обрабатываем выход из программы
+    if len(mas_metrics) == 0:
+        return
 
-form.pushButton.clicked.connect(take_onClick)
+    # Расчёт среденей метрики и её вывод
+    sr_metric = sum_metrics / len(mas_metrics)
+
+    if sr_metric < 0.5:
+        form.label.setText("Метрика: " + str(round(sr_metric, 5)) + "\nЕсть деструктив")
+    else:
+         form.label.setText("Метрика: " + str(round(sr_metric, 5)) + "\nНет деструктива")
+form.pushButton.clicked.connect(stratPredict)
+
 
 
 
 # Функция открытия файла для загрузки в textEdit
-def OpenFile():
+def openFile():
     file_name, _ = QFileDialog.getOpenFileName(window, 'открыть файл', 'architecture/', 'TXT File (*.txt)')
     if file_name:
         with open(file_name, 'r', encoding='utf8') as file:
             text = file.read()
         form.textEdit.setPlainText(text) 
-form.pushButton_4.clicked.connect(OpenFile)
+form.pushButton_4.clicked.connect(openFile)
 
 
 # При изменении textEdit удаляется значение текущей метрики
@@ -113,7 +128,7 @@ def read_metric_dict():
 
 
 # Функция выгрузки текста из файла в textEdit при нажатии на элемент listWidget
-def choose_Item():
+def chooseItem():
     name_song = form.listWidget.currentItem().text()
     file_name = "database/" + str(name_song) + ".txt"
     with open(file_name, 'r', encoding='utf-8') as file:
@@ -127,7 +142,7 @@ def choose_Item():
         form.label.setText("Метрика: " + metrik + "\nЕсть деструктив")
     else:
         form.label.setText("Метрика: " + metrik + "\nНет деструктива")
-form.listWidget.clicked.connect(choose_Item)
+form.listWidget.clicked.connect(chooseItem)
 
 
 app.exec()
