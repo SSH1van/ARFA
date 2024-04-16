@@ -60,23 +60,25 @@ form.lineEdit.textChanged.connect(search)
 
 
 def stratPredict():
-    text1 = ''
+    wholeSong = ''
     batch = []
     mas_metrics = []
     lines = form.textEdit.toPlainText().split('\n')
+    filename = 'architecture/output.txt'
     
-    # Циклом собираем по 3 строки
-    for line in lines:
-        if line.strip():
-            batch.append(line)
-        if len(batch) == 3:
-            text1 += '\n'.join(batch) + '\n\n'
-            mas_metrics.append(tf.predict(batch))
-            batch = []
-        # Если осталась еще одна строка, то дозаписываем её
-        if batch:  
-            text1 += '\n'.join(batch) + '\n'
-            mas_metrics.append(tf.predict(batch))
+    with open(filename, 'w') as file:
+        # Циклом собираем по 3 строки
+        for line in lines:
+            if line.strip():
+                batch.append(line)
+            if len(batch) == 3:
+                wholeSong += '\n'.join(batch) + '\n\n'
+                mas_metrics.append(tf.predict(batch))
+                batch = []
+            # Если осталась еще одна строка, то дозаписываем её
+            if batch:  
+                wholeSong += '\n'.join(batch) + '\n'
+                mas_metrics.append(tf.predict(batch))
     
     # Расчёт суммы метрик
     sum_metrics = 0
