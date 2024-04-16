@@ -61,25 +61,28 @@ form.lineEdit.textChanged.connect(search)
 
 def stratPredict():
     wholeSong = ''
+    nameSong = ''
     batch = []
     mas_metrics = []
     lines = form.textEdit.toPlainText().split('\n')
-    filename = 'architecture/output.txt'
     
-    with open(filename, 'w') as file:
-        # Циклом собираем по 3 строки
-        for line in lines:
-            if line.strip():
-                batch.append(line)
-            if len(batch) == 3:
-                wholeSong += '\n'.join(batch) + '\n\n'
-                mas_metrics.append(tf.predict(batch))
-                batch = []
-            # Если осталась еще одна строка, то дозаписываем её
-            if batch:  
-                wholeSong += '\n'.join(batch) + '\n'
-                mas_metrics.append(tf.predict(batch))
-    
+    # Циклом собираем по 3 строки
+    for line in lines:
+        if line.strip():
+            batch.append(line)
+            if nameSong == '':
+                nameSong = line
+        if len(batch) == 3:
+            metric = round(tf.predict(batch), 5)
+            mas_metrics.append(metric)
+            wholeSong += str(metric) + '\n' + '\n'.join(batch) + '\n\n'
+            batch = []
+        # Если осталась еще одна строка, то дозаписываем её
+    if batch:  
+        metric = round(tf.predict(batch), 5)
+        mas_metrics.append(metric)
+        wholeSong += str(metric) + '\n' + '\n'.join(batch) + '\n'
+
     # Расчёт суммы метрик
     sum_metrics = 0
     for metriс in mas_metrics:
@@ -89,13 +92,19 @@ def stratPredict():
     if len(mas_metrics) == 0:
         return
 
-    # Расчёт среденей метрики и её вывод
-    sr_metric = sum_metrics / len(mas_metrics)
+    # Расчёт среденей метрики
+    sr_metric = round(sum_metrics / len(mas_metrics), 5)
 
+    # Запись в файл песни с метриками
+    filename = 'database/' + nameSong + '.txt'
+    with open(filename, 'w', encoding='utf8') as file:
+        file.write(str(sr_metric) + '\n' + wholeSong)
+
+    # Вывод результатов в label
     if sr_metric < 0.5:
-        form.label.setText("Метрика: " + str(round(sr_metric, 5)) + "\nЕсть деструктив")
+        form.label.setText("Метрика: " + str(sr_metric) + "\nЕсть деструктив")
     else:
-         form.label.setText("Метрика: " + str(round(sr_metric, 5)) + "\nНет деструктива")
+         form.label.setText("Метрика: " + str(sr_metric) + "\nНет деструктива")
 form.pushButton.clicked.connect(stratPredict)
 
 
@@ -120,7 +129,7 @@ form.textEdit.textChanged.connect(change)
 # Получение словаря метрик из файла
 def read_metric_dict():
     metric_dict = {}
-    file_name = "database/metriks.txt"
+    file_name = "database/metrics.txt"
     with open(file_name, 'r', encoding='utf8') as file:
         for line in file:
             key, value = line.strip().split(',')
