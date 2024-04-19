@@ -187,6 +187,22 @@ def openFile():
 form.pushButton_4.clicked.connect(openFile)
 
 
+# Функция удаления выбранной песни
+def deleteSong():
+    current_item = form.listWidget.currentItem()
+    if current_item == None:
+        return
+    
+    name_song = current_item.text()
+    file_path = "database/" + str(name_song) + ".txt"
+    os.remove(file_path)
+    
+    index = form.listWidget.row(current_item)
+    form.listWidget.takeItem(index)
+    form.textEdit.clear()
+form.pushButton_3.clicked.connect(deleteSong)
+
+
 
 # При изменении textEdit удаляется значение текущей метрики
 def change():
@@ -198,8 +214,8 @@ form.textEdit.textChanged.connect(change)
 # Функция выгрузки текста из файла в textEdit при нажатии на элемент listWidget
 def chooseItem():
     name_song = form.listWidget.currentItem().text()
-    file_name = "database/" + str(name_song) + ".txt"
-    with open(file_name, 'r', encoding='utf-8') as file:
+    file_path = "database/" + str(name_song) + ".txt"
+    with open(file_path, 'r', encoding='utf-8') as file:
         metric = file.readline()
         text = file.read()
         
