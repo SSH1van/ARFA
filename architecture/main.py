@@ -87,6 +87,29 @@ form.lineEdit.textChanged.connect(search)
 # form.pushButton.clicked.connect(take_onClick)
 
 
+def checkingUniqueness(lines):
+    # Проверка по совпадению в названии
+    for line in lines:
+        if line.strip():
+            for name_song in all_items:
+                if line == name_song:
+                    return True
+            break
+
+    # Проверка по наличию уже расставленных метрик
+    iteration = 0
+    for line in lines:
+        try:
+            float(line)
+            iteration += 1
+        except ValueError:
+            iteration
+    if (iteration > 5):
+        return True
+  
+    return False
+
+
 
 def stratPredict():
     whole_song = ''
@@ -94,6 +117,9 @@ def stratPredict():
     batch = []
     mas_metrics = []
     lines = form.textEdit.toPlainText().split('\n')
+
+    # Проверяем была ли данный текст уже проанализирован
+    if checkingUniqueness(lines): return
     
     # Циклом собираем по 3 строки
     for line in lines:
@@ -127,8 +153,12 @@ def stratPredict():
 
     # Запись в файл песни с метриками
     file_name = 'database/' + name_song + '.txt'
+    whole_song = name_song + '\n\n' + whole_song
     with open(file_name, 'w', encoding='utf8') as file:
-        file.write(str(sr_metric) + '\n' + name_song + '\n\n' + whole_song)
+        file.write(str(sr_metric) + '\n' + whole_song)
+
+    # Добавляем новый текст в textEdit с метриками
+    form.textEdit.setPlainText(whole_song)
 
     # Добавление в listWidget новой песни
     form.listWidget.addItem(name_song)
