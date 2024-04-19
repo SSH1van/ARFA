@@ -78,7 +78,7 @@ background-color:white
       <rect>
        <x>490</x>
        <y>20</y>
-       <width>281</width>
+       <width>271</width>
        <height>451</height>
       </rect>
      </property>
@@ -95,6 +95,20 @@ background-color:white
 background-color:white
 }</string>
      </property>
+     <property name="dragDropOverwriteMode">
+      <bool>false</bool>
+     </property>
+     <property name="isWrapping" stdset="0">
+      <bool>false</bool>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <item>
+      <property name="text">
+       <string>awdwad awdawdawd awdawdawd awdawdawd awdawd</string>
+      </property>
+     </item>
     </widget>
     <widget class="QPushButton" name="pushButton">
      <property name="geometry">
