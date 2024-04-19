@@ -13,29 +13,29 @@ form.setupUi(window)
 window.show()
 
 
-all_items = []
-found_items = []
+allItems = []
+foundItems = []
 
 
 # Функция поиска среди списка песен
 def search():
-    s_text = form.lineEdit.text()
-    found_items.clear()
+    text = form.lineEdit.text()
+    foundItems.clear()
 
-    for item_text in all_items:
-        if s_text in item_text:
-            found_items.append(item_text)
+    for itemText in allItems:
+        if text in itemText:
+            foundItems.append(itemText)
 
     form.listWidget.clear()
 
-    for item_text in found_items:
-        form.listWidget.addItem(item_text)
+    for itemText in foundItems:
+        form.listWidget.addItem(itemText)
 
 form.lineEdit.textChanged.connect(search)
 
 for index in range(form.listWidget.count()):
     item = form.listWidget.item(index)
-    all_items.append(item.text())
+    allItems.append(item.text())
 
 form.lineEdit.textChanged.connect(search)
 
@@ -63,7 +63,7 @@ def stratPredict():
     wholeSong = ''
     nameSong = ''
     batch = []
-    mas_metrics = []
+    masMetrics = []
     lines = form.textEdit.toPlainText().split('\n')
     
     # Циклом собираем по 3 строки
@@ -72,39 +72,40 @@ def stratPredict():
             batch.append(line)
             if nameSong == '':
                 nameSong = line
+                batch = []
         if len(batch) == 3:
             metric = round(tf.predict(batch), 5)
-            mas_metrics.append(metric)
+            masMetrics.append(metric)
             wholeSong += str(metric) + '\n' + '\n'.join(batch) + '\n\n'
             batch = []
         # Если осталась еще одна строка, то дозаписываем её
     if batch:  
         metric = round(tf.predict(batch), 5)
-        mas_metrics.append(metric)
+        masMetrics.append(metric)
         wholeSong += str(metric) + '\n' + '\n'.join(batch) + '\n'
 
     # Расчёт суммы метрик
-    sum_metrics = 0
-    for metriс in mas_metrics:
-        sum_metrics += metriс
+    sumMetrics = 0
+    for metriс in masMetrics:
+        sumMetrics += metriс
 
     # Если пользователь ничего не ввёл, то обрабатываем выход из программы
-    if len(mas_metrics) == 0:
+    if len(masMetrics) == 0:
         return
 
     # Расчёт среденей метрики
-    sr_metric = round(sum_metrics / len(mas_metrics), 5)
+    srMetric = round(sumMetrics / len(masMetrics), 5)
 
     # Запись в файл песни с метриками
     filename = 'database/' + nameSong + '.txt'
     with open(filename, 'w', encoding='utf8') as file:
-        file.write(str(sr_metric) + '\n' + wholeSong)
+        file.write(str(srMetric) + '\n' + nameSong + '\n\n' + wholeSong)
 
     # Вывод результатов в label
-    if sr_metric < 0.5:
-        form.label.setText("Метрика: " + str(sr_metric) + "\nЕсть деструктив")
+    if srMetric < 0.5:
+        form.label.setText("Метрика: " + str(srMetric) + "\nЕсть деструктив")
     else:
-         form.label.setText("Метрика: " + str(sr_metric) + "\nНет деструктива")
+         form.label.setText("Метрика: " + str(srMetric) + "\nНет деструктива")
 form.pushButton.clicked.connect(stratPredict)
 
 
@@ -127,7 +128,7 @@ form.textEdit.textChanged.connect(change)
 
 
 # Получение словаря метрик из файла
-def read_metric_dict():
+def readMetricDict():
     metric_dict = {}
     file_name = "database/metrics.txt"
     with open(file_name, 'r', encoding='utf8') as file:
@@ -140,14 +141,14 @@ def read_metric_dict():
 
 # Функция выгрузки текста из файла в textEdit при нажатии на элемент listWidget
 def chooseItem():
-    name_song = form.listWidget.currentItem().text()
-    file_name = "database/" + str(name_song) + ".txt"
-    with open(file_name, 'r', encoding='utf-8') as file:
+    nameSong = form.listWidget.currentItem().text()
+    fileName = "database/" + str(nameSong) + ".txt"
+    with open(fileName, 'r', encoding='utf-8') as file:
         text = file.read()
     form.textEdit.setPlainText(text) 
     
-    metric_dict = read_metric_dict()
-    metrik = metric_dict[name_song]
+    metric_dict = readMetricDict()
+    metrik = metric_dict[nameSong]
 
     if float(metrik) < 0.5:
         form.label.setText("Метрика: " + metrik + "\nЕсть деструктив")
