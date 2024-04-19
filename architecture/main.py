@@ -1,6 +1,5 @@
 from PyQt5 import uic, QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, QMenu, QPushButton, QFileDialog, QVBoxLayout
-import time
 import os
 import function as tf
 
