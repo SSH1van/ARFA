@@ -14,11 +14,46 @@ window.show()
 
 
 allItems = []
-foundItems = []
+
+
+def getFilesInDirectory(directory):
+    # Получаем список файлов в директории
+    files = os.listdir(directory)
+    
+     # Отфильтровываем файлы с расширением .txt и возвращаем их имена без расширения
+    txtFiles = []
+    for file in files:
+        # Проверяем, является ли текущий файл файлом (а не директорией) и имеет ли он расширение .txt
+        if os.path.isfile(os.path.join(directory, file)) and file.endswith('.txt'):
+            # Используем splitext, чтобы разделить имя файла и его расширение
+            fileNameWithoutExtension = os.path.splitext(file)[0]
+            txtFiles.append(fileNameWithoutExtension)
+    
+    return txtFiles
+
+
+
+# Функция, которая вызывается при запуске программы
+def formLoad():
+    # Получаем список файлов в указанной директории
+    mamesSongs = getFilesInDirectory('database')
+
+    # Добавляем песни, которые есть в директории database
+    form.listWidget.clear()
+    for nameSong in mamesSongs:
+        form.listWidget.addItem(nameSong)
+
+    # Добавление имеющихся песен из listWidget для поиска среди них
+    for index in range(form.listWidget.count()):
+        item = form.listWidget.item(index)
+        allItems.append(item.text())
+formLoad()
+
 
 
 # Функция поиска среди списка песен
 def search():
+    foundItems = []
     text = form.lineEdit.text()
     foundItems.clear()
 
@@ -33,11 +68,6 @@ def search():
 
 form.lineEdit.textChanged.connect(search)
 
-for index in range(form.listWidget.count()):
-    item = form.listWidget.item(index)
-    allItems.append(item.text())
-
-form.lineEdit.textChanged.connect(search)
 
 
 # Вывод в файлик по 3 строчечки
@@ -101,13 +131,20 @@ def stratPredict():
     with open(filename, 'w', encoding='utf8') as file:
         file.write(str(srMetric) + '\n' + nameSong + '\n\n' + wholeSong)
 
+    # Добавление в listWidget новой песни
+    form.listWidget.addItem(nameSong)
+
+    allItems.clear()
+    for index in range(form.listWidget.count()):
+        item = form.listWidget.item(index)
+        allItems.append(item.text())
+
     # Вывод результатов в label
     if srMetric < 0.5:
         form.label.setText("Метрика: " + str(srMetric) + "\nЕсть деструктив")
     else:
          form.label.setText("Метрика: " + str(srMetric) + "\nНет деструктива")
 form.pushButton.clicked.connect(stratPredict)
-
 
 
 
@@ -121,22 +158,12 @@ def openFile():
 form.pushButton_4.clicked.connect(openFile)
 
 
+
 # При изменении textEdit удаляется значение текущей метрики
 def change():
     form.label.clear()
 form.textEdit.textChanged.connect(change)
 
-
-# Получение словаря метрик из файла
-def readMetricDict():
-    metric_dict = {}
-    file_name = "database/metrics.txt"
-    with open(file_name, 'r', encoding='utf8') as file:
-        for line in file:
-            key, value = line.strip().split(',')
-            metric_dict[key] = value
-    
-    return metric_dict
 
 
 # Функция выгрузки текста из файла в textEdit при нажатии на элемент listWidget
@@ -144,16 +171,15 @@ def chooseItem():
     nameSong = form.listWidget.currentItem().text()
     fileName = "database/" + str(nameSong) + ".txt"
     with open(fileName, 'r', encoding='utf-8') as file:
+        metric = file.readline()
         text = file.read()
+        
     form.textEdit.setPlainText(text) 
     
-    metric_dict = readMetricDict()
-    metrik = metric_dict[nameSong]
-
-    if float(metrik) < 0.5:
-        form.label.setText("Метрика: " + metrik + "\nЕсть деструктив")
+    if float(metric) < 0.5:
+        form.label.setText("Метрика: " + metric + "Есть деструктив")
     else:
-        form.label.setText("Метрика: " + metrik + "\nНет деструктива")
+        form.label.setText("Метрика: " + metric + "Нет деструктива")
 form.listWidget.clicked.connect(chooseItem)
 
 
