@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>851</width>
+    <width>824</width>
     <height>599</height>
    </rect>
   </property>
@@ -166,7 +166,7 @@ color:#fff
     <widget class="QPushButton" name="pushButton_3">
      <property name="geometry">
       <rect>
-       <x>740</x>
+       <x>730</x>
        <y>480</y>
        <width>31</width>
        <height>31</height>
@@ -185,7 +185,7 @@ border-color: white;
      </property>
      <property name="icon">
       <iconset>
-       <normalon>../../../../загрузки/icons8-trash-96.png</normalon>
+       <normalon>:/images/trash.png</normalon>
       </iconset>
      </property>
      <property name="iconSize">
@@ -364,6 +364,8 @@ border-color: black;
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../res.qrc"/>
+ </resources>
  <connections/>
 </ui>
