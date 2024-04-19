@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>836</width>
-    <height>593</height>
+    <width>851</width>
+    <height>599</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -36,7 +36,7 @@
    <widget class="QFrame" name="frame">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>30</x>
       <y>40</y>
       <width>861</width>
       <height>571</height>
@@ -95,61 +95,6 @@ background-color:white
 background-color:white
 }</string>
      </property>
-     <item>
-      <property name="text">
-       <string>SHAMAN - Вызов</string>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>SHAMAN - Я русский</string>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>OG Buda Грусть 2 (Соната) ft. MAYOT</string>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Scally Milano - Кид Кади ft. 1630NMYNECK &amp; FEARMUCH</string>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Oxxxymiron - В говне</string>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Oxxxymiron - ОЙДА</string>
-      </property>
-     </item>
     </widget>
     <widget class="QPushButton" name="pushButton">
      <property name="geometry">
@@ -167,6 +112,15 @@ background-color:white
        <weight>75</weight>
        <bold>true</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+background-color:#505050;
+color: white;
+border-style: solid;
+border-width: 1px;
+border-color: white;
+}</string>
      </property>
      <property name="text">
       <string>Запуск</string>
@@ -195,10 +149,43 @@ color:#fff
       <string/>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButton_3">
+     <property name="geometry">
+      <rect>
+       <x>740</x>
+       <y>480</y>
+       <width>31</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+background-color:#505050;
+border-style: solid;
+border-width: 1px;
+border-color: white;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normalon>../../../../загрузки/icons8-trash-96.png</normalon>
+      </iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>28</width>
+       <height>28</height>
+      </size>
+     </property>
+    </widget>
     <zorder>listWidget</zorder>
     <zorder>pushButton</zorder>
     <zorder>label</zorder>
     <zorder>textEdit</zorder>
+    <zorder>pushButton_3</zorder>
    </widget>
    <widget class="QFrame" name="frame_2">
     <property name="geometry">
@@ -280,7 +267,10 @@ background-color:#ff8f33
      </property>
      <property name="styleSheet">
       <string notr="true">QPushButton{
-
+background-color: white;
+border-style: solid;
+border-width: 1px;
+border-color: black;
 }</string>
      </property>
      <property name="text">
@@ -303,6 +293,14 @@ background-color:#ff8f33
        <bold>true</bold>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+background-color: white;
+border-style: solid;
+border-width: 1px;
+border-color: black;
+}</string>
+     </property>
      <property name="text">
       <string>Помощь</string>
      </property>
@@ -315,6 +313,15 @@ background-color:#ff8f33
        <width>531</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit{
+background-color: white;
+border-style: solid;
+border-width: 1px;
+border-color: black;
+
+}</string>
      </property>
      <property name="text">
       <string/>
