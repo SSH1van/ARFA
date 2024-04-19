@@ -12,7 +12,7 @@ form.setupUi(window)
 window.show()
 
 
-allItems = []
+all_items = []
 
 
 def getFilesInDirectory(directory):
@@ -20,49 +20,49 @@ def getFilesInDirectory(directory):
     files = os.listdir(directory)
     
      # Отфильтровываем файлы с расширением .txt и возвращаем их имена без расширения
-    txtFiles = []
+    txt_files = []
     for file in files:
         # Проверяем, является ли текущий файл файлом (а не директорией) и имеет ли он расширение .txt
         if os.path.isfile(os.path.join(directory, file)) and file.endswith('.txt'):
             # Используем splitext, чтобы разделить имя файла и его расширение
-            fileNameWithoutExtension = os.path.splitext(file)[0]
-            txtFiles.append(fileNameWithoutExtension)
+            file_name_without_extension = os.path.splitext(file)[0]
+            txt_files.append(file_name_without_extension)
     
-    return txtFiles
+    return txt_files
 
 
 
 # Функция, которая вызывается при запуске программы
 def formLoad():
     # Получаем список файлов в указанной директории
-    mamesSongs = getFilesInDirectory('database')
+    mames_songs = getFilesInDirectory('database')
 
     # Добавляем песни, которые есть в директории database
     form.listWidget.clear()
-    for nameSong in mamesSongs:
-        form.listWidget.addItem(nameSong)
+    for name_song in mames_songs:
+        form.listWidget.addItem(name_song)
 
     # Добавление имеющихся песен из listWidget для поиска среди них
     for index in range(form.listWidget.count()):
         item = form.listWidget.item(index)
-        allItems.append(item.text())
+        all_items.append(item.text())
 formLoad()
 
 
 
 # Функция поиска среди списка песен
 def search():
-    foundItems = []
+    found_items = []
     text = form.lineEdit.text()
-    foundItems.clear()
+    found_items.clear()
 
-    for itemText in allItems:
+    for item_text in all_items:
         if text in itemText:
-            foundItems.append(itemText)
+            found_items.append(item_text)
 
     form.listWidget.clear()
 
-    for itemText in foundItems:
+    for itemText in found_items:
         form.listWidget.addItem(itemText)
 
 form.lineEdit.textChanged.connect(search)
@@ -71,8 +71,8 @@ form.lineEdit.textChanged.connect(search)
 
 # Вывод в файлик по 3 строчечки
 # def take_onClick():
-#     filename = 'frontend/output.txt'
-#     with open(filename, 'w') as file:
+#     file_name = 'frontend/output.txt'
+#     with open(file_name, 'w') as file:
 #         lines = form.textEdit.toPlainText().split('\n')
 #         batch = []
 #         for line in lines:
@@ -89,60 +89,60 @@ form.lineEdit.textChanged.connect(search)
 
 
 def stratPredict():
-    wholeSong = ''
-    nameSong = ''
+    whole_song = ''
+    name_song = ''
     batch = []
-    masMetrics = []
+    mas_metrics = []
     lines = form.textEdit.toPlainText().split('\n')
     
     # Циклом собираем по 3 строки
     for line in lines:
         if line.strip():
             batch.append(line)
-            if nameSong == '':
-                nameSong = line
+            if name_song == '':
+                name_song = line
                 batch = []
         if len(batch) == 3:
             metric = round(tf.predict(batch), 5)
-            masMetrics.append(metric)
-            wholeSong += str(metric) + '\n' + '\n'.join(batch) + '\n\n'
+            mas_metrics.append(metric)
+            whole_song += str(metric) + '\n' + '\n'.join(batch) + '\n\n'
             batch = []
         # Если осталась еще одна строка, то дозаписываем её
     if batch:  
         metric = round(tf.predict(batch), 5)
-        masMetrics.append(metric)
-        wholeSong += str(metric) + '\n' + '\n'.join(batch) + '\n'
+        mas_metrics.append(metric)
+        whole_song += str(metric) + '\n' + '\n'.join(batch) + '\n'
 
     # Расчёт суммы метрик
-    sumMetrics = 0
-    for metriс in masMetrics:
-        sumMetrics += metriс
+    sum_metrics = 0
+    for metriс in mas_metrics:
+        sum_metrics += metriс
 
     # Если пользователь ничего не ввёл, то обрабатываем выход из программы
-    if len(masMetrics) == 0:
+    if len(mas_metrics) == 0:
         return
 
     # Расчёт среденей метрики
-    srMetric = round(sumMetrics / len(masMetrics), 5)
+    sr_metric = round(sum_metrics / len(mas_metrics), 5)
 
     # Запись в файл песни с метриками
-    filename = 'database/' + nameSong + '.txt'
-    with open(filename, 'w', encoding='utf8') as file:
-        file.write(str(srMetric) + '\n' + nameSong + '\n\n' + wholeSong)
+    file_name = 'database/' + name_song + '.txt'
+    with open(file_name, 'w', encoding='utf8') as file:
+        file.write(str(sr_metric) + '\n' + name_song + '\n\n' + whole_song)
 
     # Добавление в listWidget новой песни
-    form.listWidget.addItem(nameSong)
+    form.listWidget.addItem(name_song)
 
-    allItems.clear()
+    all_items.clear()
     for index in range(form.listWidget.count()):
         item = form.listWidget.item(index)
-        allItems.append(item.text())
+        all_items.append(item.text())
 
     # Вывод результатов в label
-    if srMetric < 0.5:
-        form.label.setText("Метрика: " + str(srMetric) + "\nЕсть деструктив")
+    if sr_metric < 0.5:
+        form.label.setText("Метрика: " + str(sr_metric) + "\nЕсть деструктив")
     else:
-         form.label.setText("Метрика: " + str(srMetric) + "\nНет деструктива")
+         form.label.setText("Метрика: " + str(sr_metric) + "\nНет деструктива")
 form.pushButton.clicked.connect(stratPredict)
 
 
@@ -167,9 +167,9 @@ form.textEdit.textChanged.connect(change)
 
 # Функция выгрузки текста из файла в textEdit при нажатии на элемент listWidget
 def chooseItem():
-    nameSong = form.listWidget.currentItem().text()
-    fileName = "database/" + str(nameSong) + ".txt"
-    with open(fileName, 'r', encoding='utf-8') as file:
+    name_song = form.listWidget.currentItem().text()
+    file_name = "database/" + str(name_song) + ".txt"
+    with open(file_name, 'r', encoding='utf-8') as file:
         metric = file.readline()
         text = file.read()
         
