@@ -2,7 +2,9 @@ from PyQt5 import uic, QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, QMenu, QPushButton, QFileDialog, QVBoxLayout
 import os
 import function as tf
-import sqlite3;
+import sqlite3
+
+
  
 # Подключаем базу данных
 con = sqlite3.connect("songs.db")

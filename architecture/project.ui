@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>824</width>
-    <height>599</height>
+    <height>593</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -178,7 +178,8 @@ background-color:#505050;
 border-style: solid;
 border-width: 1px;
 border-color: white;
-}</string>
+}
+</string>
      </property>
      <property name="text">
       <string/>
@@ -207,7 +208,7 @@ border-color: white;
     </property>
     <property name="styleSheet">
      <string notr="true">QFrame{
-background-color:#ff8f33
+background-color:#505050
 }</string>
     </property>
     <property name="frameShape">
@@ -227,7 +228,7 @@ background-color:#ff8f33
      </property>
      <property name="styleSheet">
       <string notr="true">QFrame{
-background-color:#404040
+background-color:#505050
 }</string>
      </property>
      <property name="frameShape">
@@ -236,12 +237,28 @@ background-color:#404040
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>2</x>
+        <y>2</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QFrame" name="frame_3">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>10</x>
       <y>0</y>
       <width>901</width>
       <height>41</height>
@@ -249,7 +266,7 @@ background-color:#404040
     </property>
     <property name="styleSheet">
      <string notr="true">QFrame{
-background-color:#ff8f33
+background-color:#505050
 }</string>
     </property>
     <property name="frameShape">
@@ -258,41 +275,13 @@ background-color:#ff8f33
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <widget class="QPushButton" name="pushButton_4">
-     <property name="geometry">
-      <rect>
-       <x>50</x>
-       <y>10</y>
-       <width>101</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Roboto</family>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton{
-background-color: white;
-border-style: solid;
-border-width: 1px;
-border-color: black;
-}</string>
-     </property>
-     <property name="text">
-      <string>Открыть файл</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="pushButton_2">
      <property name="geometry">
       <rect>
-       <x>160</x>
+       <x>150</x>
        <y>10</y>
-       <width>101</width>
-       <height>21</height>
+       <width>81</width>
+       <height>25</height>
       </rect>
      </property>
      <property name="font">
@@ -320,7 +309,7 @@ border-color: black;
        <x>280</x>
        <y>10</y>
        <width>531</width>
-       <height>20</height>
+       <height>25</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -339,9 +328,34 @@ border-color: black;
       <string>Поиск</string>
      </property>
     </widget>
-    <zorder>pushButton_2</zorder>
-    <zorder>lineEdit</zorder>
-    <zorder>pushButton_4</zorder>
+    <widget class="QPushButton" name="pushButton_4">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>10</y>
+       <width>101</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Roboto</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+background-color: white;
+border-style: solid;
+border-width: 1px;
+border-color: black;
+}</string>
+     </property>
+     <property name="text">
+      <string>Открыть файл</string>
+     </property>
+    </widget>
    </widget>
    <zorder>frame_3</zorder>
    <zorder>frame</zorder>
