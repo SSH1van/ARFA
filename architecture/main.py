@@ -40,13 +40,13 @@ def getFilesInDirectory(directory):
 # Функция, которая вызывается при запуске программы
 def formLoad():
     # Получаем список названий песен из БД
-    names_songs = cur.execute("SELECT name FROM songs ").fetchone()
+    names_songs = cur.execute("SELECT name FROM songs").fetchall()
 
 
     # Добавляем песни, которые есть в БД
     form.listWidget.clear()
     for name_song in names_songs:
-        form.listWidget.addItem(name_song)
+        form.listWidget.addItem(name_song[0])
 
     # Добавление имеющихся песен из listWidget для поиска среди них
     for index in range(form.listWidget.count()):
