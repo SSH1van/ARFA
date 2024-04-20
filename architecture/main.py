@@ -2,6 +2,11 @@ from PyQt5 import uic, QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, QMenu, QPushButton, QFileDialog, QVBoxLayout
 import os
 import function as tf
+import sqlite3;
+ 
+ # Подключаем базу данных
+con = sqlite3.connect("songs.db")
+cur = con.cursor()
 
 Form, Window = uic.loadUiType("architecture/project.ui")
 
@@ -34,12 +39,13 @@ def getFilesInDirectory(directory):
 
 # Функция, которая вызывается при запуске программы
 def formLoad():
-    # Получаем список файлов в указанной директории
-    mames_songs = getFilesInDirectory('database')
+    # Получаем список названий песен из БД
+    names_songs = cur.execute("SELECT name FROM songs ").fetchone()
 
-    # Добавляем песни, которые есть в директории database
+
+    # Добавляем песни, которые есть в БД
     form.listWidget.clear()
-    for name_song in mames_songs:
+    for name_song in names_songs:
         form.listWidget.addItem(name_song)
 
     # Добавление имеющихся песен из listWidget для поиска среди них
@@ -112,11 +118,13 @@ def checkingUniqueness(lines):
 
 
 def stratPredict():
-    whole_song = ''
+    whole_song_with_metrics = ''
+    whole_song = form.textEdit.toPlainText().strip('\n')
     name_song = ''
     batch = []
     mas_metrics = []
     lines = form.textEdit.toPlainText().split('\n')
+
 
     # Проверяем была ли данный текст уже проанализирован
     if checkingUniqueness(lines): return
@@ -131,13 +139,13 @@ def stratPredict():
         if len(batch) == 3:
             metric = round(tf.predict(batch), 5)
             mas_metrics.append(metric)
-            whole_song += str(metric) + '\n' + '\n'.join(batch) + '\n\n'
+            whole_song_with_metrics += str(metric) + '\n' + '\n'.join(batch) + '\n\n'
             batch = []
         # Если осталась еще одна строка, то дозаписываем её
     if batch:  
         metric = round(tf.predict(batch), 5)
         mas_metrics.append(metric)
-        whole_song += str(metric) + '\n' + '\n'.join(batch) + '\n'
+        whole_song_with_metrics += str(metric) + '\n' + '\n'.join(batch) + '\n'
 
     # Расчёт суммы метрик
     sum_metrics = 0
@@ -151,14 +159,14 @@ def stratPredict():
     # Расчёт среденей метрики
     sr_metric = round(sum_metrics / len(mas_metrics), 5)
 
-    # Запись в файл песни с метриками
-    file_name = 'database/' + name_song + '.txt'
-    whole_song = name_song + '\n\n' + whole_song
-    with open(file_name, 'w', encoding='utf8') as file:
-        file.write(str(sr_metric) + '\n' + whole_song)
+    # Запись в БД песни с метриками
+    whole_song_with_metrics = name_song + '\n\n' + whole_song_with_metrics
+    data = [(name_song, whole_song, whole_song_with_metrics, sr_metric),]
+    cur.executemany("INSERT INTO songs (name, text, text_metrics, metric) VALUES(?, ?, ?, ?)", data)
+    con.commit()
 
     # Добавляем новый текст в textEdit с метриками
-    form.textEdit.setPlainText(whole_song)
+    form.textEdit.setPlainText(whole_song_with_metrics)
 
     # Добавление в listWidget новой песни
     form.listWidget.addItem(name_song)
@@ -194,9 +202,9 @@ def deleteSong():
         return
     
     name_song = current_item.text()
-    file_path = "database/" + str(name_song) + ".txt"
-    os.remove(file_path)
-    
+    cur.execute("DELETE FROM songs WHERE name = ?", [(name_song)])
+    con.commit()
+
     index = form.listWidget.row(current_item)
     form.listWidget.takeItem(index)
     form.textEdit.clear()
@@ -214,17 +222,15 @@ form.textEdit.textChanged.connect(change)
 # Функция выгрузки текста из файла в textEdit при нажатии на элемент listWidget
 def chooseItem():
     name_song = form.listWidget.currentItem().text()
-    file_path = "database/" + str(name_song) + ".txt"
-    with open(file_path, 'r', encoding='utf-8') as file:
-        metric = file.readline()
-        text = file.read()
-        
-    form.textEdit.setPlainText(text) 
+
+    text, metric = cur.execute("SELECT text_metrics, metric FROM songs WHERE name = ?", [(name_song)]).fetchone()
+
+    form.textEdit.setPlainText(str(text)) 
     
-    if float(metric) < 0.5:
-        form.label.setText("Метрика: " + metric + "Есть деструктив")
+    if metric < 0.5:
+        form.label.setText("Метрика: " + str(metric) + "\nЕсть деструктив")
     else:
-        form.label.setText("Метрика: " + metric + "Нет деструктива")
+        form.label.setText("Метрика: " + str(metric) + "\nНет деструктива")
 form.listWidget.clicked.connect(chooseItem)
 
 
