@@ -65,13 +65,13 @@ def search():
     found_items.clear()
 
     for item_text in all_items:
-        if text in itemText:
+        if text in item_text:
             found_items.append(item_text)
 
     form.listWidget.clear()
 
-    for itemText in found_items:
-        form.listWidget.addItem(itemText)
+    for item_text in found_items:
+        form.listWidget.addItem(item_text)
 
 form.lineEdit.textChanged.connect(search)
 
