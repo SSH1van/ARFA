@@ -4,7 +4,7 @@ import os
 import function as tf
 import sqlite3;
  
- # Подключаем базу данных
+# Подключаем базу данных
 con = sqlite3.connect("songs.db")
 cur = con.cursor()
 
