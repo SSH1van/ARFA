@@ -126,29 +126,52 @@ def stratPredict():
     batch = []
     mas_metrics = []
     lines = form.textEdit.toPlainText().split('\n')
-
+    words_count=0
+    words_limit=30
 
     # Проверяем была ли данный текст уже проанализирован
     if checkingUniqueness(lines): return
     
-    # Циклом собираем по 3 строки
+
+
+
+
     for line in lines:
-        if line.strip():
-            batch.append(line)
+        words = line.split()
+        for word in words:
+            batch.append(word)
+            words_count += 1
             if name_song == '':
                 name_song = line
                 batch = []
-        if len(batch) == 3:
+            if words_count == words_limit:
+                metric = round(tf.predict(batch), 5)
+                mas_metrics.append(metric)
+                whole_song_with_metrics += str(metric) + '\n' + ' '.join(batch) + '\n\n'
+                batch = []
+                words_count = 0
+            if line.strip() == '':  # Проверка на пустую строку для новой песни
+                name_song = ''
+                words_count = 0
+    """   # Циклом собираем по 3 строки
+    for line in lines:
+        words=line.split()
+        if words:
+            batch.append(word)
+            if name_song == '':
+                name_song = line
+                batch = []
+            if words_count == words_limit:
+                metric = round(tf.predict(batch), 5)
+                mas_metrics.append(metric)
+                whole_song_with_metrics += str(metric) + '\n' + '\n'.join(batch) + '\n\n'
+                batch = []
+        # Если осталась еще одна строка, то дозаписываем её
+        if batch:  
             metric = round(tf.predict(batch), 5)
             mas_metrics.append(metric)
-            whole_song_with_metrics += str(metric) + '\n' + '\n'.join(batch) + '\n\n'
-            batch = []
-        # Если осталась еще одна строка, то дозаписываем её
-    if batch:  
-        metric = round(tf.predict(batch), 5)
-        mas_metrics.append(metric)
-        whole_song_with_metrics += str(metric) + '\n' + '\n'.join(batch) + '\n'
-
+            whole_song_with_metrics += str(metric) + '\n' + '\n'.join(batch) + '\n'
+"""
     # Расчёт суммы метрик
     sum_metrics = 0
     for metriс in mas_metrics:
