@@ -7,7 +7,7 @@ import pickle
 # Максимальная длинна части песни
 max_review_len = 100
 
-# Pагрузка словаря и обученной модели
+# Максимальное количесвто слов в словаре
 num_words = 10000
 
 global tokenizer
@@ -21,7 +21,7 @@ global model
 model = load_model('engine/best_model.h5')
     
 
-# Функция получения строки, её формирование, предсказание и возвращение
+# Функция получения строки, её формирование, предсказание и возврат
 def predict(text):
     sequence = tokenizer.texts_to_sequences([text])
     data = pad_sequences(sequence, maxlen=max_review_len)

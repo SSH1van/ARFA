@@ -145,7 +145,7 @@ def stratPredict():
                 name_song = line
                 batch = []
             if words_count == words_limit:
-                metric = round(tf.predict(batch), 5)
+                metric = round(tf.predict(' '.join(batch)), 5)
                 mas_metrics.append(metric)
                 whole_song_with_metrics += str(metric) + '\n' + ' '.join(batch) + '\n\n'
                 batch = []
