@@ -1,7 +1,7 @@
 from PyQt5 import uic, QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, QMenu, QPushButton, QFileDialog, QVBoxLayout
 import os
-import function as tf
+import getmetric
 import sqlite3
 
 
@@ -130,7 +130,7 @@ def stratPredict():
 
     # Получаем метрику каждой части по 30 слов
     for song_part in song_parts:
-        metric = round(tf.predict(song_part), 5)
+        metric = round(getmetric.predict(song_part), 5)
         mas_metrics.append(metric)
         whole_song_with_metrics += str(metric) + '\n' + song_part + '\n\n'
 
