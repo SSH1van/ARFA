@@ -77,23 +77,6 @@ form.lineEdit.textChanged.connect(search)
 
 
 
-# Вывод в файлик по 3 строчечки
-# def take_onClick():
-#     file_name = 'frontend/output.txt'
-#     with open(file_name, 'w') as file:
-#         lines = form.textEdit.toPlainText().split('\n')
-#         batch = []
-#         for line in lines:
-#             if line.strip():
-#                 batch.append(line)
-#             if len(batch) == 3:
-#                 file.write('\n'.join(batch) + '\n\n')
-#                 batch = []
-
-#         if batch:  # если осталась еще одна строка
-#             file.write('\n'.join(batch) + '\n')
-# form.pushButton.clicked.connect(take_onClick)
-
 
 def checkingUniqueness(lines):
     # Проверка по совпадению в названии
@@ -116,8 +99,6 @@ def checkingUniqueness(lines):
         return True
   
     return False
-
-
 
 def stratPredict():
     whole_song = form.textEdit.toPlainText().strip('\n')
