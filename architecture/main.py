@@ -214,6 +214,11 @@ def deleteSong():
     index = form.listWidget.row(current_item)
     form.listWidget.takeItem(index)
     form.textEdit.clear()
+
+    all_items.clear()
+    for index in range(form.listWidget.count()):
+        item = form.listWidget.item(index)
+        all_items.append(item.text())
 form.pushButton_3.clicked.connect(deleteSong)
 
 
