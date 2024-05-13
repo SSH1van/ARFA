@@ -120,58 +120,39 @@ def checkingUniqueness(lines):
 
 
 def stratPredict():
-    whole_song_with_metrics = ''
     whole_song = form.textEdit.toPlainText().strip('\n')
-    name_song = ''
-    batch = []
-    mas_metrics = []
     lines = form.textEdit.toPlainText().split('\n')
-    words_count=0
-    words_limit=30
 
+    mas_metrics = []
+    song_parts = []
+
+    whole_song_with_metrics = ''
+    current_part = ''
+    name_song = ''
+   
     # Проверяем была ли данный текст уже проанализирован
     if checkingUniqueness(lines): return
     
-
-
-
-
+    # Делим песню по 30 слов и больше
     for line in lines:
-        words = line.split()
-        for word in words:
-            batch.append(word)
-            words_count += 1
-            if name_song == '':
-                name_song = line
-                batch = []
-            if words_count == words_limit:
-                metric = round(tf.predict(' '.join(batch)), 5)
-                mas_metrics.append(metric)
-                whole_song_with_metrics += str(metric) + '\n' + ' '.join(batch) + '\n\n'
-                batch = []
-                words_count = 0
-            if line.strip() == '':  # Проверка на пустую строку для новой песни
-                name_song = ''
-                words_count = 0
-    """   # Циклом собираем по 3 строки
-    for line in lines:
-        words=line.split()
-        if words:
-            batch.append(word)
-            if name_song == '':
-                name_song = line
-                batch = []
-            if words_count == words_limit:
-                metric = round(tf.predict(batch), 5)
-                mas_metrics.append(metric)
-                whole_song_with_metrics += str(metric) + '\n' + '\n'.join(batch) + '\n\n'
-                batch = []
-        # Если осталась еще одна строка, то дозаписываем её
-        if batch:  
-            metric = round(tf.predict(batch), 5)
-            mas_metrics.append(metric)
-            whole_song_with_metrics += str(metric) + '\n' + '\n'.join(batch) + '\n'
-"""
+        if name_song == '':
+            name_song = line
+        elif line != '':
+            current_part += line + '\n'
+
+        length = len(current_part.split())
+        if length >= 30:
+            song_parts.append(current_part)
+            current_part = ''
+    if length < 30:
+        song_parts.append(current_part)
+
+    # Получаем метрику каждой части по 30 слов
+    for song_part in song_parts:
+        metric = round(tf.predict(song_part), 5)
+        mas_metrics.append(metric)
+        whole_song_with_metrics += str(metric) + '\n' + song_part + '\n\n'
+
     # Расчёт суммы метрик
     sum_metrics = 0
     for metriс in mas_metrics:
