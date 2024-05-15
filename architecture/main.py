@@ -61,11 +61,11 @@ formLoad()
 # Функция поиска среди списка песен
 def search():
     found_items = []
-    text = form.lineEdit.text()
+    text = form.lineEdit.text().lower()  
     found_items.clear()
 
     for item_text in all_items:
-        if text in item_text:
+        if text in item_text.lower(): 
             found_items.append(item_text)
 
     form.listWidget.clear()
