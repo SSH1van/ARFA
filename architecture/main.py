@@ -57,7 +57,6 @@ def formLoad():
 formLoad()
 
 
-
 # Функция поиска среди списка песен
 def search():
     found_items = []
