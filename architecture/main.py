@@ -101,7 +101,7 @@ def checkingUniqueness(lines):
 
 def stratPredict():
     whole_song = form.textEdit.toPlainText().strip('\n')
-    lines = form.textEdit.toPlainText().split('\n')
+    lines = whole_song.split('\n')
 
     mas_metrics = []
     song_parts = []
@@ -113,7 +113,7 @@ def stratPredict():
     # Проверяем была ли данный текст уже проанализирован
     if checkingUniqueness(lines): return
     
-    # Делим песню по 30 слов и больше
+    # Делим песню по 20 слов и больше
     for line in lines:
         if name_song == '':
             name_song = line
@@ -121,10 +121,12 @@ def stratPredict():
             current_part += line + '\n'
 
         length = len(current_part.split())
-        if length >= 30:
+        if length >= 20:
             song_parts.append(current_part)
             current_part = ''
-    if length < 30:
+    if length < 11 and len(song_parts) > 0:
+        song_parts[-1] = song_parts[-1] + current_part
+    else:
         song_parts.append(current_part)
 
     # Получаем метрику каждой части по 30 слов
