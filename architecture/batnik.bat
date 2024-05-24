@@ -1,1 +1,0 @@
-pyuic5 -x  D:\PROJECTS\RSpython\project.ui -o D:\PROJECTS\RSpython\project.py

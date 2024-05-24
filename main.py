@@ -1,16 +1,19 @@
-from PyQt5 import uic, QtCore
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, QMenu, QPushButton, QFileDialog, QVBoxLayout
 import os
-import getmetric
+import app.getmetric as gm
 import sqlite3
 
+from PyQt5 import uic, QtCore
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, QMenu, QPushButton, QFileDialog, QVBoxLayout
 
- 
+
+
+
+
 # Подключаем базу данных
 con = sqlite3.connect("songs.db")
 cur = con.cursor()
 
-Form, Window = uic.loadUiType("architecture/project.ui")
+Form, Window = uic.loadUiType("app/gui/project.ui")
 
 app = QApplication([])
 window = Window()
@@ -131,7 +134,7 @@ def stratPredict():
 
     # Получаем метрику каждой части по 30 слов
     for song_part in song_parts:
-        metric = round(getmetric.predict(song_part), 5)
+        metric = round(gm.predict(song_part), 5)
         mas_metrics.append(metric)
         whole_song_with_metrics += str(metric) + '\n' + song_part + '\n\n'
 
@@ -175,7 +178,7 @@ form.pushButton.clicked.connect(stratPredict)
 
 # Функция открытия файла для загрузки в textEdit
 def openFile():
-    file_name, _ = QFileDialog.getOpenFileName(window, 'открыть файл', 'architecture/', 'TXT File (*.txt)')
+    file_name, _ = QFileDialog.getOpenFileName(window, 'открыть файл', 'dev/examples', 'TXT File (*.txt)')
     if file_name:
         with open(file_name, 'r', encoding='utf8') as file:
             text = file.read()
