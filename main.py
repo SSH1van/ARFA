@@ -1,20 +1,12 @@
-import os
-import app.getmetric as gm
-import sqlite3
-
 from PyQt5 import uic, QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, QMenu, QPushButton, QFileDialog, QVBoxLayout
 
+import app.database.model 
+import app.getmetric as gm
+import app.database.requests as rq
 
-
-
-
-# Подключаем базу данных
-con = sqlite3.connect("songs.db")
-cur = con.cursor()
 
 Form, Window = uic.loadUiType("app/gui/project.ui")
-
 app = QApplication([])
 window = Window()
 form = Form()
@@ -22,70 +14,46 @@ form.setupUi(window)
 window.show()
 
 
-all_items = []
-
-
-def getFilesInDirectory(directory):
-    # Получаем список файлов в директории
-    files = os.listdir(directory)
-    
-     # Отфильтровываем файлы с расширением .txt и возвращаем их имена без расширения
-    txt_files = []
-    for file in files:
-        # Проверяем, является ли текущий файл файлом (а не директорией) и имеет ли он расширение .txt
-        if os.path.isfile(os.path.join(directory, file)) and file.endswith('.txt'):
-            # Используем splitext, чтобы разделить имя файла и его расширение
-            file_name_without_extension = os.path.splitext(file)[0]
-            txt_files.append(file_name_without_extension)
-    
-    return txt_files
-
-
 
 # Функция, которая вызывается при запуске программы
 def formLoad():
     # Получаем список названий песен из БД
-    names_songs = cur.execute("SELECT name FROM songs").fetchall()
-
+    names = rq.get_all_names()
 
     # Добавляем песни, которые есть в БД
     form.listWidget.clear()
-    for name_song in names_songs:
-        form.listWidget.addItem(name_song[0])
-
-    # Добавление имеющихся песен из listWidget для поиска среди них
-    for index in range(form.listWidget.count()):
-        item = form.listWidget.item(index)
-        all_items.append(item.text())
+    for name in names:
+        form.listWidget.addItem(name)
 formLoad()
 
 
 # Функция поиска среди списка песен
 def search():
+    names = rq.get_all_names()
+    
     found_items = []
     text = form.lineEdit.text().lower()  
     found_items.clear()
 
-    for item_text in all_items:
-        if text in item_text.lower(): 
-            found_items.append(item_text)
+    for name in names:
+        if text in name.lower(): 
+            found_items.append(name)
 
     form.listWidget.clear()
 
-    for item_text in found_items:
-        form.listWidget.addItem(item_text)
-
+    for item in found_items:
+        form.listWidget.addItem(item)
 form.lineEdit.textChanged.connect(search)
 
 
 
-
 def checkingUniqueness(lines):
+    names = rq.get_all_names()
     # Проверка по совпадению в названии
     for line in lines:
         if line.strip():
-            for name_song in all_items:
-                if line == name_song:
+            for name in names:
+                if line == name:
                     return True
             break
 
@@ -102,41 +70,45 @@ def checkingUniqueness(lines):
   
     return False
 
+
 def stratPredict():
-    whole_song = form.textEdit.toPlainText().strip('\n')
-    lines = whole_song.split('\n')
+    text = form.textEdit.toPlainText().strip('\n')
+    lines = text.split('\n')
 
     mas_metrics = []
-    song_parts = []
+    parts = []
 
-    whole_song_with_metrics = ''
+    text_metrics = ''
     current_part = ''
-    name_song = ''
+    name = ''
    
     # Проверяем была ли данный текст уже проанализирован
     if checkingUniqueness(lines): return
     
     # Делим песню по 20 слов и больше
     for line in lines:
-        if name_song == '':
-            name_song = line
+        if name == '':
+            name = line
         elif line != '':
             current_part += line + '\n'
 
         length = len(current_part.split())
         if length >= 20:
-            song_parts.append(current_part)
+            parts.append(current_part)
             current_part = ''
-    if length < 11 and len(song_parts) > 0:
-        song_parts[-1] = song_parts[-1] + current_part
+    if length < 11 and len(parts) > 0:
+        parts[-1] = parts[-1] + current_part
     else:
-        song_parts.append(current_part)
+        parts.append(current_part)
 
-    # Получаем метрику каждой части по 30 слов
-    for song_part in song_parts:
+    # Удаляем из текста название песни
+    text = text[len(name):].strip()
+
+    # Получаем метрику каждой части по 20 слов
+    for song_part in parts:
         metric = round(gm.predict(song_part), 5)
         mas_metrics.append(metric)
-        whole_song_with_metrics += str(metric) + '\n' + song_part + '\n\n'
+        text_metrics += str(metric) + '\n' + song_part + '\n\n'
 
     # Расчёт суммы метрик
     sum_metrics = 0
@@ -151,29 +123,20 @@ def stratPredict():
     sr_metric = round(sum_metrics / len(mas_metrics), 5)
 
     # Запись в БД песни с метриками
-    whole_song_with_metrics = name_song + '\n\n' + whole_song_with_metrics
-    data = [(name_song, whole_song, whole_song_with_metrics, sr_metric),]
-    cur.executemany("INSERT INTO songs (name, text, text_metrics, metric) VALUES(?, ?, ?, ?)", data)
-    con.commit()
+    rq.add_song(name, text, text_metrics, sr_metric)
 
     # Добавляем новый текст в textEdit с метриками
-    form.textEdit.setPlainText(whole_song_with_metrics)
+    form.textEdit.setPlainText(f'{name}\n\n\n{text_metrics}')
 
     # Добавление в listWidget новой песни
-    form.listWidget.addItem(name_song)
-
-    all_items.clear()
-    for index in range(form.listWidget.count()):
-        item = form.listWidget.item(index)
-        all_items.append(item.text())
+    form.listWidget.addItem(name)
 
     # Вывод результатов в label
     if sr_metric < 0.5:
-        form.label.setText("Метрика: " + str(sr_metric) + "\nЕсть деструктив")
+        form.label.setText(f'Метрика: {sr_metric}\nЕсть деструктив')
     else:
-         form.label.setText("Метрика: " + str(sr_metric) + "\nНет деструктива")
+        form.label.setText(f'Метрика: {sr_metric}\nНет деструктива')
 form.pushButton.clicked.connect(stratPredict)
-
 
 
 # Функция открытия файла для загрузки в textEdit
@@ -192,20 +155,13 @@ def deleteSong():
     if current_item == None:
         return
     
-    name_song = current_item.text()
-    cur.execute("DELETE FROM songs WHERE name = ?", [(name_song)])
-    con.commit()
+    name = current_item.text()
+    rq.delete_song(name)
 
     index = form.listWidget.row(current_item)
     form.listWidget.takeItem(index)
     form.textEdit.clear()
-
-    all_items.clear()
-    for index in range(form.listWidget.count()):
-        item = form.listWidget.item(index)
-        all_items.append(item.text())
 form.pushButton_3.clicked.connect(deleteSong)
-
 
 
 # При изменении textEdit удаляется значение текущей метрики
@@ -214,19 +170,19 @@ def change():
 form.textEdit.textChanged.connect(change)
 
 
-
 # Функция выгрузки текста из файла в textEdit при нажатии на элемент listWidget
 def chooseItem():
-    name_song = form.listWidget.currentItem().text()
+    name = form.listWidget.currentItem().text()
 
-    text, metric = cur.execute("SELECT text_metrics, metric FROM songs WHERE name = ?", [(name_song)]).fetchone()
+    text_metrics = rq.get_text_metrics(name)
+    metric = rq.get_metric(name)
 
-    form.textEdit.setPlainText(str(text)) 
+    form.textEdit.setPlainText(f'{name}\n\n\n{text_metrics}') 
     
     if metric < 0.5:
-        form.label.setText("Метрика: " + str(metric) + "\nЕсть деструктив")
+        form.label.setText(f'Метрика: {metric}\nЕсть деструктив')
     else:
-        form.label.setText("Метрика: " + str(metric) + "\nНет деструктива")
+        form.label.setText(f'Метрика: {metric}\nНет деструктива')
 form.listWidget.clicked.connect(chooseItem)
 
 
