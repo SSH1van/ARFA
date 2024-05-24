@@ -5,7 +5,7 @@ from keras.preprocessing.sequence import pad_sequences
 import pickle
 
 # Максимальная длинна части песни
-max_review_len = 100
+max_review_len = 40
 
 # Максимальное количесвто слов в словаре
 num_words = 10000
