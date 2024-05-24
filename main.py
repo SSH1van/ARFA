@@ -65,9 +65,8 @@ def checkingUniqueness(lines):
             iteration += 1
         except ValueError:
             iteration
-    if (iteration > 5):
+    if iteration > 3:
         return True
-  
     return False
 
 
