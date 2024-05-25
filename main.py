@@ -97,7 +97,7 @@ def stratPredict():
             current_part = ''
     if length < 11 and len(parts) > 0:
         parts[-1] = parts[-1] + current_part
-    else:
+    elif current_part != '':
         parts.append(current_part)
 
     # Удаляем из текста название песни
