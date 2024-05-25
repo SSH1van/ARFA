@@ -13,10 +13,14 @@ form = Form()
 form.setupUi(window)
 window.show()
 
-
+# Устанавливаем фиксированный размер окна
+window.setFixedSize(window.size())
 
 # Функция, которая вызывается при запуске программы
 def formLoad():
+    # Скрываем progressBar при запуске приложения
+    form.progressBar.setVisible(False)
+    
     # Получаем список названий песен из БД
     names = rq.get_all_names()
 
@@ -103,11 +107,24 @@ def stratPredict():
     # Удаляем из текста название песни
     text = text[len(name):].strip()
 
+    # Включаем отображение processbar
+    form.progressBar.setVisible(True)
+    len_parts = len(parts)
+    step = 100 / len_parts
+    all_step = 0
+
     # Получаем метрику каждой части по 20 слов
     for song_part in parts:
         metric = round(gm.predict(song_part), 5)
         mas_metrics.append(metric)
         text_metrics += str(metric) + '\n' + song_part + '\n\n'
+
+        form.progressBar.setValue(int(all_step)) 
+        QtCore.QCoreApplication.processEvents()
+        all_step += step
+
+    # Выключаем отображение processbar
+    form.progressBar.setVisible(False)
 
     # Расчёт суммы метрик
     sum_metrics = 0
@@ -124,18 +141,23 @@ def stratPredict():
     # Запись в БД песни с метриками
     rq.add_song(name, text, text_metrics, sr_metric)
 
-    # Добавляем новый текст в textEdit с метриками
-    form.textEdit.setPlainText(f'{name}\n\n\n{text_metrics}')
+    # Добавляем новый текст в textEdit
+    if form.show_metrics.isChecked():
+        form.textEdit.setPlainText(f'{name}\n\n\n{text_metrics}')
+    else:
+        form.textEdit.setPlainText(f'{name}\n\n\n{text}')
 
-    # Добавление в listWidget новой песни
+    # Добавление в listWidget новой песни и выбор его
     form.listWidget.addItem(name)
+    items = form.listWidget.findItems(name, QtCore.Qt.MatchExactly)
+    form.listWidget.setCurrentItem(items[0])
 
     # Вывод результатов в label
     if sr_metric < 0.5:
-        form.label.setText(f'Метрика: {sr_metric}\nЕсть деструктив')
+        form.result_label.setText(f'Метрика: {sr_metric}\nЕсть деструктив')
     else:
-        form.label.setText(f'Метрика: {sr_metric}\nНет деструктива')
-form.pushButton.clicked.connect(stratPredict)
+        form.result_label.setText(f'Метрика: {sr_metric}\nНет деструктива')
+form.start_button.clicked.connect(stratPredict)
 
 
 # Функция открытия файла для загрузки в textEdit
@@ -145,7 +167,7 @@ def openFile():
         with open(file_name, 'r', encoding='utf8') as file:
             text = file.read()
         form.textEdit.setPlainText(text) 
-form.pushButton_4.clicked.connect(openFile)
+form.open_file_button.clicked.connect(openFile)
 
 
 # Функция удаления выбранной песни
@@ -160,12 +182,12 @@ def deleteSong():
     index = form.listWidget.row(current_item)
     form.listWidget.takeItem(index)
     form.textEdit.clear()
-form.pushButton_3.clicked.connect(deleteSong)
+form.delete_song_button.clicked.connect(deleteSong)
 
 
 # При изменении textEdit удаляется значение текущей метрики
 def change():
-    form.label.clear()
+    form.result_label.clear()
 form.textEdit.textChanged.connect(change)
 
 
@@ -174,15 +196,39 @@ def chooseItem():
     name = form.listWidget.currentItem().text()
 
     text_metrics = rq.get_text_metrics(name)
+    text = rq.get_text(name)
     metric = rq.get_metric(name)
 
-    form.textEdit.setPlainText(f'{name}\n\n\n{text_metrics}') 
+    if form.show_metrics.isChecked():
+        form.textEdit.setPlainText(f'{name}\n\n\n{text_metrics}')
+    else:
+        form.textEdit.setPlainText(f'{name}\n\n\n{text}')
     
     if metric < 0.5:
-        form.label.setText(f'Метрика: {metric}\nЕсть деструктив')
+        form.result_label.setText(f'Метрика: {metric}\nЕсть деструктив')
     else:
-        form.label.setText(f'Метрика: {metric}\nНет деструктива')
+        form.result_label.setText(f'Метрика: {metric}\nНет деструктива')
 form.listWidget.clicked.connect(chooseItem)
+
+
+# Функция изменения отображения/скрытия метрик песни
+def changeCheckBox():
+    if form.listWidget.currentItem() == None:
+        return
+    
+    label = form.result_label.text()
+    name = form.listWidget.currentItem().text()
+
+    text_metrics = rq.get_text_metrics(name)
+    text = rq.get_text(name)
+
+    if form.show_metrics.isChecked():
+        form.textEdit.setPlainText(f'{name}\n\n\n{text_metrics}')
+    else:
+        form.textEdit.setPlainText(f'{name}\n\n\n{text}')
+    
+    form.result_label.setText(label)
+form.show_metrics.clicked.connect(changeCheckBox)
 
 
 app.exec()
