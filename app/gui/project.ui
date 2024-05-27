@@ -58,7 +58,7 @@ background-color:#404040
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <widget class="QTextEdit" name="textEdit">
+    <widget class="QTextEdit" name="text_song">
      <property name="geometry">
       <rect>
        <x>90</x>
@@ -79,7 +79,7 @@ background-color:white
 }</string>
      </property>
     </widget>
-    <widget class="QListWidget" name="listWidget">
+    <widget class="QListWidget" name="list_songs">
      <property name="geometry">
       <rect>
        <x>610</x>
@@ -271,7 +271,7 @@ border-color: white;
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QProgressBar" name="progressBar">
+    <widget class="QProgressBar" name="progress_bar">
      <property name="geometry">
       <rect>
        <x>90</x>
@@ -287,13 +287,13 @@ border-color: white;
       <bool>false</bool>
      </property>
     </widget>
-    <zorder>listWidget</zorder>
+    <zorder>list_songs</zorder>
     <zorder>start_button</zorder>
     <zorder>result_label</zorder>
-    <zorder>textEdit</zorder>
+    <zorder>text_song</zorder>
     <zorder>delete_song_button</zorder>
     <zorder>show_metrics</zorder>
-    <zorder>progressBar</zorder>
+    <zorder>progress_bar</zorder>
    </widget>
    <widget class="QFrame" name="frame_2">
     <property name="geometry">

@@ -18,16 +18,16 @@ window.setFixedSize(window.size())
 
 # Функция, которая вызывается при запуске программы
 def formLoad():
-    # Скрываем progressBar при запуске приложения
-    form.progressBar.setVisible(False)
+    # Скрываем progress_bar при запуске приложения
+    form.progress_bar.setVisible(False)
     
     # Получаем список названий песен из БД
     names = rq.get_all_names()
 
     # Добавляем песни, которые есть в БД
-    form.listWidget.clear()
+    form.list_songs.clear()
     for name in names:
-        form.listWidget.addItem(name)
+        form.list_songs.addItem(name)
 formLoad()
 
 
@@ -43,10 +43,10 @@ def search():
         if text in name.lower(): 
             found_items.append(name)
 
-    form.listWidget.clear()
+    form.list_songs.clear()
 
     for item in found_items:
-        form.listWidget.addItem(item)
+        form.list_songs.addItem(item)
 form.lineEdit.textChanged.connect(search)
 
 
@@ -75,7 +75,7 @@ def checkingUniqueness(lines):
 
 
 def stratPredict():
-    text = form.textEdit.toPlainText().strip('\n')
+    text = form.text_song.toPlainText().strip('\n')
     lines = text.split('\n')
 
     mas_metrics = []
@@ -110,7 +110,7 @@ def stratPredict():
     text = text[len(name):].strip()
 
     # Включаем отображение processbar
-    form.progressBar.setVisible(True)
+    form.progress_bar.setVisible(True)
     len_parts = len(parts)
     step = 100 / len_parts
     all_step = 0
@@ -121,12 +121,12 @@ def stratPredict():
         mas_metrics.append(metric)
         text_metrics += str(metric) + '\n' + song_part + '\n\n'
 
-        form.progressBar.setValue(int(all_step)) 
+        form.progress_bar.setValue(int(all_step)) 
         QtCore.QCoreApplication.processEvents()
         all_step += step
 
     # Выключаем отображение processbar
-    form.progressBar.setVisible(False)
+    form.progress_bar.setVisible(False)
 
     # Расчёт суммы метрик
     sum_metrics = 0
@@ -143,16 +143,16 @@ def stratPredict():
     # Запись в БД песни с метриками
     rq.add_song(name, text, text_metrics, sr_metric)
 
-    # Добавляем новый текст в textEdit
+    # Добавляем новый текст в text_song
     if form.show_metrics.isChecked():
-        form.textEdit.setPlainText(f'{name}\n\n\n{text_metrics}')
+        form.text_song.setPlainText(f'{name}\n\n\n{text_metrics}')
     else:
-        form.textEdit.setPlainText(f'{name}\n\n\n{text}')
+        form.text_song.setPlainText(f'{name}\n\n\n{text}')
 
-    # Добавление в listWidget новой песни и выбор его
-    form.listWidget.addItem(name)
-    items = form.listWidget.findItems(name, QtCore.Qt.MatchExactly)
-    form.listWidget.setCurrentItem(items[0])
+    # Добавление в list_songs новой песни и выбор его
+    form.list_songs.addItem(name)
+    items = form.list_songs.findItems(name, QtCore.Qt.MatchExactly)
+    form.list_songs.setCurrentItem(items[0])
 
     # Вывод результатов в label
     if sr_metric < 0.5:
@@ -162,72 +162,72 @@ def stratPredict():
 form.start_button.clicked.connect(stratPredict)
 
 
-# Функция открытия файла для загрузки в textEdit
+# Функция открытия файла для загрузки в text_song
 def openFile():
     file_name, _ = QFileDialog.getOpenFileName(window, 'открыть файл', 'dev/examples', 'TXT File (*.txt)')
     if file_name:
         with open(file_name, 'r', encoding='utf8') as file:
             text = file.read()
-        form.textEdit.setPlainText(text) 
+        form.text_song.setPlainText(text) 
 form.open_file_button.clicked.connect(openFile)
 
 
 # Функция удаления выбранной песни
 def deleteSong():
-    current_item = form.listWidget.currentItem()
+    current_item = form.list_songs.currentItem()
     if current_item == None:
         return
     
     name = current_item.text()
     rq.delete_song(name)
 
-    index = form.listWidget.row(current_item)
-    form.listWidget.takeItem(index)
-    form.textEdit.clear()
+    index = form.list_songs.row(current_item)
+    form.list_songs.takeItem(index)
+    form.text_song.clear()
 form.delete_song_button.clicked.connect(deleteSong)
 
 
-# При изменении textEdit удаляется значение текущей метрики
+# При изменении text_song удаляется значение текущей метрики
 def change():
     form.result_label.clear()
-form.textEdit.textChanged.connect(change)
+form.text_song.textChanged.connect(change)
 
 
-# Функция выгрузки текста из файла в textEdit при нажатии на элемент listWidget
+# Функция выгрузки текста из файла в text_song при нажатии на элемент list_songs
 def chooseItem():
-    name = form.listWidget.currentItem().text()
+    name = form.list_songs.currentItem().text()
 
     text_metrics = rq.get_text_metrics(name)
     text = rq.get_text(name)
     metric = rq.get_metric(name)
 
     if form.show_metrics.isChecked():
-        form.textEdit.setPlainText(f'{name}\n\n\n{text_metrics}')
+        form.text_song.setPlainText(f'{name}\n\n\n{text_metrics}')
     else:
-        form.textEdit.setPlainText(f'{name}\n\n\n{text}')
+        form.text_song.setPlainText(f'{name}\n\n\n{text}')
     
     if metric < 0.5:
         form.result_label.setText(f'Метрика: {metric}\nЕсть деструктив')
     else:
         form.result_label.setText(f'Метрика: {metric}\nНет деструктива')
-form.listWidget.clicked.connect(chooseItem)
+form.list_songs.clicked.connect(chooseItem)
 
 
 # Функция изменения отображения/скрытия метрик песни
 def changeCheckBox():
-    if form.listWidget.currentItem() == None:
+    if form.list_songs.currentItem() == None:
         return
     
     save_label = form.result_label.text()
-    name = form.listWidget.currentItem().text()
+    name = form.list_songs.currentItem().text()
 
     text_metrics = rq.get_text_metrics(name)
     text = rq.get_text(name)
 
     if form.show_metrics.isChecked():
-        form.textEdit.setPlainText(f'{name}\n\n\n{text_metrics}')
+        form.text_song.setPlainText(f'{name}\n\n\n{text_metrics}')
     else:
-        form.textEdit.setPlainText(f'{name}\n\n\n{text}')
+        form.text_song.setPlainText(f'{name}\n\n\n{text}')
     
     form.result_label.setText(save_label)
 form.show_metrics.clicked.connect(changeCheckBox)
