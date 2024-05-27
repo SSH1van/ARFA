@@ -86,7 +86,9 @@ def stratPredict():
     name = ''
    
     # Проверяем была ли данный текст уже проанализирован
-    if checkingUniqueness(lines): return
+    if checkingUniqueness(lines): 
+        form.result_label.setText('Песня уже проанализирована\nОбратитесь к списку справа')
+        return
     
     # Делим песню по 20 слов и больше
     for line in lines:
@@ -99,7 +101,7 @@ def stratPredict():
         if length >= 20:
             parts.append(current_part)
             current_part = ''
-    if length < 11 and len(parts) > 0:
+    if length < 11 and parts:
         parts[-1] = parts[-1] + current_part
     elif current_part != '':
         parts.append(current_part)
