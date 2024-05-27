@@ -218,7 +218,7 @@ def changeCheckBox():
     if form.listWidget.currentItem() == None:
         return
     
-    label = form.result_label.text()
+    save_label = form.result_label.text()
     name = form.listWidget.currentItem().text()
 
     text_metrics = rq.get_text_metrics(name)
@@ -229,7 +229,7 @@ def changeCheckBox():
     else:
         form.textEdit.setPlainText(f'{name}\n\n\n{text}')
     
-    form.result_label.setText(label)
+    form.result_label.setText(save_label)
 form.show_metrics.clicked.connect(changeCheckBox)
 
 
